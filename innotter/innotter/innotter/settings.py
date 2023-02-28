@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-sixk0bbkm@9%^n^+4tlm$jfovb*tu952zpw$k_7w@x&!i$bcnt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -84,11 +84,11 @@ WSGI_APPLICATION = 'innotter.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'innotter',
+        'USER': 'myprojectuser',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
