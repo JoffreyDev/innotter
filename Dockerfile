@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY poetry.lock /app
 COPY pyproject.toml /app
-COPY ./innotter/innotter/.env /app
+COPY ./innotter/innotter/.env /app/inotter/innotter
 
 RUN pip3 install poetry
 
