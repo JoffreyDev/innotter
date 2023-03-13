@@ -1,0 +1,17 @@
+FROM python:3 AS web
+
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /app
+
+COPY ./poetry.lock /app
+COPY ./pyproject.toml /app
+COPY ./innotter/innotter/innotter/.env /app/inotter/innotter/innotter
+COPY ./entrypoint-web.sh /app
+RUN chmod +x /app/entrypoint-web.sh
+
+RUN pip3 install poetry
+
+RUN poetry install
+
+

@@ -17,7 +17,7 @@ class Page(models.Model):
    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
    followers = models.ManyToManyField(User, related_name='follows')
 
-   image = models.URLField(null=True, blank=True)
+   image = models.ImageField(null=True, blank=True, upload_to='pages_images')
 
    is_private = models.BooleanField(default=False)
    follow_requests = models.ManyToManyField(User, related_name='requests')
