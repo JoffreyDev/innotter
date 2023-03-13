@@ -11,5 +11,5 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     image = models.ImageField(null=True, blank=True, upload_to='users_images')
     role = models.CharField(max_length=9, choices=Roles.choices, default='user')
-    title = models.CharField(max_length=80)
+    title = models.CharField(max_length=80, blank=True)
     is_blocked = models.BooleanField(default=False)

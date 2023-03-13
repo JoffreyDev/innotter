@@ -1,124 +1,65 @@
 from django.shortcuts import render
-from .serializers import PageSerializer, PostSerializer, PageCreateSerializer
+from .serializers import PageSerializer, PostSerializer, PageCreateUpdateSerializer, PageFollowSerializer
 from rest_framework import viewsets
 from .models import Page, Post
 from rest_framework.response import Response
-from innotter.permissions import IsPageOwnerOrAdminModer
+from innotter.permissions import IsOwnerOrAdminModer
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
-class PageViewSet(viewsets.ViewSet):
-    """
-    A simple ViewSet for viewing and editing Page.
-    """
 
+class PageViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [IsOwnerOrAdminModer]
+
+    permission_classes_by_action = {
+        'create': [IsAuthenticated],
+        'list': [IsAuthenticated],
+        'retrieve': [IsOwnerOrAdminModer],
+        'update': [IsOwnerOrAdminModer],
+        'partial_update': [IsOwnerOrAdminModer],
+        'destroy': [IsOwnerOrAdminModer],
+        'subscribe_to_page': [IsAuthenticated],
+    }
+
+    serializer_classes_by_action = {
+        'list': PageSerializer,
+        'create': PageCreateUpdateSerializer,
+        'retrieve': PageSerializer,
+        'update': PageCreateUpdateSerializer,
+        'partial_update': PageCreateUpdateSerializer,
+        'destroy': PageSerializer,
+        'subscribe_to_page': PageFollowSerializer,
+    }
+
+    queryset = Page.objects.all()
+
+    # Getting permissions for specific action
     def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action == 'list' or self.action == 'retrieve' or self.action == 'update':
-            permission_classes = [IsPageOwnerOrAdminModer]
-        else:
-            permission_classes = [IsPageOwnerOrAdminModer]
-        return [permission() for permission in permission_classes]
+        try:
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            return [permission() for permission in self.permission_classes]
 
-    def get_serializer(self, *args, **kwargs):
-        if self.action == 'create' or self.action == 'update':
-            return PageCreateSerializer(*args, **kwargs)
-        return PageSerializer(*args, **kwargs)
+    # Getting serializer for specific action
+    def get_serializer_class(self):
+        return self.serializer_classes_by_action.get(self.action, PageSerializer)
     
-    def list(self, request):
-        self.check_permissions(request)
-        queryset = Page.objects.all()
-        serializer = PageSerializer(queryset, many=True)
-        return Response(serializer.data)
+    @action(detail=False, methods=['post'], serializer_class = PageFollowSerializer)
+    def subscribe_to_page(self, request):
+        instance = get_object_or_404(Page, uuid=request.data.get('uuid'))
+        serializer = PageFollowSerializer(instance=instance, data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.update(instance, validated_data=serializer.validated_data)
+        return Response(serializer.validated_data.get('response'))
 
-    def create(self, request):
-        serializer = PageCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=request.user)
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
 
-    def retrieve(self, request, pk=None):
-        try:
-            page = Page.objects.get(pk=pk)
-            self.check_object_permissions(request, page)
-        except Page.DoesNotExist:
-            return Response(status=404)
-
-        serializer = PageSerializer(page)
-        return Response(serializer.data)
-
-    def update(self, request, pk=None):
-        try:
-            page = Page.objects.get(pk=pk)
-            self.check_object_permissions(request, page)
-        except Page.DoesNotExist:
-            return Response(status=404)
-
-        serializer = PageSerializer(page, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-
-    def destroy(self, request, pk=None):
-        try:
-            page = Page.objects.get(pk=pk)
-            self.check_object_permissions(request, page)
-        except Page.DoesNotExist:
-            return Response(status=404)
-
-        page.delete()
-        return Response(status=204)
-    
-class PostViewSet(viewsets.ViewSet):
+class PostViewSet(viewsets.ModelViewSet):
     """
     A simple ViewSet for viewing and editing Posts.
     """
+
+    permission_classes = [IsOwnerOrAdminModer]
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
-
-    def list(self, request):
-        queryset = Post.objects.all()
-        serializer = PostSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def create(self, request):
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
-    def retrieve(self, request, pk=None):
-        try:
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            return Response(status=404)
-
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
-
-    def update(self, request, pk=None):
-        try:
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            return Response(status=404)
-
-        serializer = PostSerializer(post, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
-
-    def destroy(self, request, pk=None):
-        try:
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            return Response(status=404)
-
-        post.delete()
-        return Response(status=204)
-    
-    
-

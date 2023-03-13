@@ -49,3 +49,4 @@ class JWTAuthenticationMiddleware:
         # Аутентификация пользователя
         request.user = user
         return self.get_response(request)
+
