@@ -26,6 +26,28 @@ services:
     volumes: 
       - db:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3.8
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+    env_file:
+      - './innotter/innotter/innotter/.env'
+
+  celery:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile-core
+    security_opt:
+      - label:type:docker_t
+    entrypoint: './entrypoint-worker.sh'
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+
 volumes:
   db:
     driver: local

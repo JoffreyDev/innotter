@@ -13,3 +13,4 @@ class User(AbstractUser):
     role = models.CharField(max_length=9, choices=Roles.choices, default='user')
     title = models.CharField(max_length=80, blank=True)
     is_blocked = models.BooleanField(default=False)
+    

@@ -47,6 +47,13 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name', 'last_name', 'image', 'email', 'role', 'is_blocked' ]
 
 class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email',)
+
+class UserSerializer(serializers.ModelSerializer):
       class Meta:
         model = User
         fields = '__all__'
+
+        

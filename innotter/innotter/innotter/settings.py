@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'users',
     'entities',
     'storages',
+    'pika',
     
 ]
 
@@ -156,6 +157,8 @@ AWS_HEADERS ={
     'Access-Control-Allow-Origin': '*',
 }
 
+AWS_REGION_NAME = 'us-east-2'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -182,5 +185,13 @@ JWT_REFRESH_EXPIRATION_DELTA = timedelta(days=7)
 # Настройки аутентификации
 JWT_AUTH_HEADER_PREFIX = 'Bearer'
 JWT_AUTH_COOKIE = None
+
+#RabbitMQ
+RABBITMQ_HOST = 'localhost'
+RABBITMQ_PORT = 5672
+RABBITMQ_USER = 'admin'
+RABBITMQ_PASSWORD = 'admin'
+RABBITMQ_VIRTUAL_HOST = '/'
+RABBITMQ_STATISTICS_QUEUE = 'statistics_queue'
 
 

@@ -25,3 +25,5 @@ __pycache__/
 # Игнорировать файлы, созданные веб-сервером
 staticfiles/
 media/
+
+rabbitmq/
