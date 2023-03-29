@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  app:
+    restart: always
+    build: 
+      context: .
+      dockerfile: ./Dockerfile-core
+    volumes:
+      - ./:/app/
+    security_opt:
+      - label:type:docker_t
+    entrypoint: './entrypoint-web.sh'
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      - './innotter/innotter/innotter/.env'
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3.8
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+    env_file:
+      - './innotter/innotter/innotter/.env'
+
+  celery:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile-core
+    security_opt:
+      - label:type:docker_t
+    entrypoint: './entrypoint-worker.sh'
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+
+  microservice:
+    depends_on:
+      - db
+      - rabbitmq
+    build: 
+      context: .
+      dockerfile: ./Dockerfile-microservice
+    volumes: 
+       - ./innotter/microservice/:/innotter/microservice
+    entrypoint: './entrypoint-microservice.sh'
+    ports:
+      - "8001:8001"
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+    env_file:
+      - './innotter/innotter/innotter/.env'
+
+volumes:
+  db:
+    driver: local

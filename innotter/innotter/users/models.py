@@ -9,7 +9,8 @@ class User(AbstractUser):
         ADMIN = 'admin'
 
     email = models.EmailField(unique=True)
-    image_s3_path = models.CharField(max_length=200, null=True, blank=True)
-    role = models.CharField(max_length=9, choices=Roles.choices)
-    title = models.CharField(max_length=80)
+    image = models.ImageField(null=True, blank=True, upload_to='users_images')
+    role = models.CharField(max_length=9, choices=Roles.choices, default='user')
+    title = models.CharField(max_length=80, blank=True)
     is_blocked = models.BooleanField(default=False)
+    

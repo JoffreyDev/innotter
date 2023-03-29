@@ -15,12 +15,12 @@ class Page(models.Model):
    tags = models.ManyToManyField(Tag, related_name='pages')
 
    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
-   followers = models.ManyToManyField(User, related_name='follows')
+   followers = models.ManyToManyField(User, related_name='follows', blank=True)
 
-   image = models.URLField(null=True, blank=True)
+   image = models.ImageField(null=True, blank=True, upload_to='pages_images')
 
    is_private = models.BooleanField(default=False)
-   follow_requests = models.ManyToManyField(User, related_name='requests')
+   follow_requests = models.ManyToManyField(User, related_name='requests', blank=True)
 
    unblock_date = models.DateTimeField(null=True, blank=True)
 
@@ -36,9 +36,12 @@ class Post(models.Model):
 
    reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='replies', blank=True)
 
+   likes = models.ManyToManyField(User, blank=True)
+
    created_at = models.DateTimeField(auto_now_add=True)
    updated_at = models.DateTimeField(auto_now=True)
 
    def __str__(self):
         return self.content
+
 

@@ -1,0 +1,16 @@
+FROM python:3 AS web
+
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /app
+
+COPY . .
+
+RUN chmod +x entrypoint-web.sh
+RUN chmod +x entrypoint-worker.sh
+
+RUN pip3 install poetry
+
+RUN poetry install
+
+
