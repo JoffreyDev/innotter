@@ -4,13 +4,10 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY ./poetry.lock /app
-COPY ./pyproject.toml /app
-COPY ./innotter/innotter/innotter/.env /app/inotter/innotter/innotter
-COPY ./entrypoint-web.sh /app
-COPY ./entrypoint-worker.sh /app
-RUN chmod +x /app/entrypoint-web.sh
-RUN chmod +x /app/entrypoint-worker.sh
+COPY . .
+
+RUN chmod +x entrypoint-web.sh
+RUN chmod +x entrypoint-worker.sh
 
 RUN pip3 install poetry
 

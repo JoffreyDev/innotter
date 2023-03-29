@@ -35,7 +35,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'rabbitmq']
 
 
 # Application definition
@@ -187,11 +187,10 @@ JWT_AUTH_HEADER_PREFIX = 'Bearer'
 JWT_AUTH_COOKIE = None
 
 #RabbitMQ
-RABBITMQ_HOST = 'localhost'
-RABBITMQ_PORT = 5672
-RABBITMQ_USER = 'admin'
-RABBITMQ_PASSWORD = 'admin'
-RABBITMQ_VIRTUAL_HOST = '/'
-RABBITMQ_STATISTICS_QUEUE = 'statistics_queue'
+rabbitmq_host = "rabbitmq"
+rabbitmq_virtual_host = '/'
+rabbitmq_port = 5672
+rabbitmq_user = os.environ.get('RABBITMQ_DEFAULT_USER')
+rabbitmq_password = os.environ.get('RABBITMQ_DEFAULT_PASS')
 
 

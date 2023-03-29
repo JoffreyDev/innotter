@@ -9,7 +9,7 @@ from entities.serializers import PostSerializer
 from rest_framework.permissions import IsAuthenticated
 import json
 import pika
-import requests
+from services.statistics_service import get_user_statistics_from_microservice
 
 from django.http import JsonResponse
 from django.conf import settings
@@ -115,5 +115,11 @@ class UserViewSet(viewsets.ModelViewSet):
         posts = posts.order_by('-created_at')
         serializer = PostSerializer(posts, many=True)
         return Response({'posts': serializer.data})
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        user_id = request.user.id
+        response = get_user_statistics_from_microservice(user_id)
+        return Response(response)
     
     

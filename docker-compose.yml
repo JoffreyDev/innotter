@@ -48,6 +48,23 @@ services:
     depends_on:
       - rabbitmq
 
+  microservice:
+    depends_on:
+      - db
+      - rabbitmq
+    build: 
+      context: .
+      dockerfile: ./Dockerfile-microservice
+    volumes: 
+       - ./innotter/microservice/:/innotter/microservice
+    entrypoint: './entrypoint-microservice.sh'
+    ports:
+      - "8001:8001"
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+    env_file:
+      - './innotter/innotter/innotter/.env'
+
 volumes:
   db:
     driver: local
